@@ -1,9 +1,0 @@
-{
-    "extends": "eslint:recommended",
-    "parserOptions": {
-        "sourceType": "module"
-    },
-    "rules": {
-        "semi": ["error", "always"]
-    }
-}

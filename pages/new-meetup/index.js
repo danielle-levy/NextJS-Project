@@ -1,7 +1,5 @@
-import React from "react"
-
 function NewMeetupPage() {
-    return <div />
-}
+    return <div />;
+};
 
 export default NewMeetupPage;
