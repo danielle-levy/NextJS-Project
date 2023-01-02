@@ -17,8 +17,22 @@ const DUMMY_MEETUPS = [
     },
 ];
 
-function HomePage() {
-    return <MeetupList meetups={DUMMY_MEETUPS} />
+function HomePage(props) {
+    return <MeetupList meetups={props.meetups} />
 };
+
+// SSG: Static Site Generation
+export function getStaticProps() {
+    // Fetch data from some API/DB
+    return {
+        props: {
+            meetups: DUMMY_MEETUPS,
+        },
+        revalidate: 3600, // one hour
+    };
+}
+
+// SSR: Server Side Rendering
+// TODO
 
 export default HomePage;
