@@ -22,17 +22,29 @@ function HomePage(props) {
 };
 
 // SSG: Static Site Generation
-export function getStaticProps() {
+
+export async function getStaticProps() {
     // Fetch data from some API/DB
     return {
         props: {
             meetups: DUMMY_MEETUPS,
         },
-        revalidate: 3600, // one hour
+        revalidate: 3600 // one hour
     };
 }
 
 // SSR: Server Side Rendering
-// TODO
+
+// export async function getServerSideProps(context) {
+//     const req = context.req;
+//     const res = context.res;
+
+//     // Fetch data from some API/DB
+//     return {
+//         props: {
+//             meetups: DUMMY_MEETUPS,
+//         },
+//     };
+// }
 
 export default HomePage;
