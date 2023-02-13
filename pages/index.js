@@ -1,3 +1,5 @@
+import { Fragment } from 'react';
+import Head from 'next/head';
 import { MongoClient } from 'mongodb';
 
 import MeetupList from '../components/meetups/MeetupList';
@@ -20,7 +22,16 @@ const DUMMY_MEETUPS = [
 ];
 
 function HomePage(props) {
-    return <MeetupList meetups={props.meetups} />
+    return <Fragment>
+        <Head>
+            <title>React Meetups</title>
+            <meta
+                name='description'
+                content='Browse unlimited list of React Meetups!'
+            />
+        </Head>
+        <MeetupList meetups={props.meetups} />
+    </Fragment>
 };
 
 // SSG: Static Site Generation
@@ -28,7 +39,7 @@ function HomePage(props) {
 export async function getStaticProps() {
     // Fetch data from some API/DB
     const client = await MongoClient.connect('mongodb+srv://<username>:<password>@cluster0.di5umik.mongodb.net/meetups?retryWrites=true&w=majority');
-    
+
     const db = client.db();
 
     const meetupCollection = db.collection('meetups');
