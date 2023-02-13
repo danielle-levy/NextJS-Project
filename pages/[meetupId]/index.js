@@ -1,12 +1,15 @@
+import { MongoClient } from 'mongodb';
+import { ObjectId } from 'mongodb';
+
 import MeetupDetail from '../../components/meetups/MeetupDetail';
 
-function MeetupDetails() {
+function MeetupDetails(props) {
     return (
         <MeetupDetail
-            image='https://media.licdn.com/dms/image/D4D16AQHJpqThgdDs3Q/profile-displaybackgroundimage-shrink_350_1400/0/1671816287583?e=1677715200&v=beta&t=Dt0JA8EQUeRtpduCo-6B8Gm3j7LRcypMW28vYvNtC1g'
-            title='First Meetup'
-            address='Some Street 5, Some City'
-            description='The first meetup description'
+            image={props.meetupData.image}
+            title={props.meetupData.title}
+            address={props.meetupData.address}
+            description={props.meetupData.description}
         />
     );
 }
@@ -14,39 +17,54 @@ function MeetupDetails() {
 // SSG: Static Site Generation
 
 export async function getStaticPaths() {
+    const client = await MongoClient.connect('mongodb+srv://<username>:<password>@cluster0.di5umik.mongodb.net/meetups?retryWrites=true&w=majority');
+
+    const db = client.db();
+
+    const meetupCollection = db.collection('meetups');
+
+    const meetups = await meetupCollection.find({}, { _id: 1 }).toArray();
+
+    client.close();
+
     return {
         fallback: false,
-        paths: [
-            {
-                params: {
-                    meetupId: 'm1',
-                }
-            },
-            {
-                params: {
-                    meetupId: 'm2',
-                }
+        paths: meetups.map(meetup => ({
+            params: {
+                meetupId: meetup._id.toString(),
             }
-        ]
+        }))
+
     }
 }
 
-export async function getStaticProps(context) {    
-    // fetch data for a single meetup
-
+export async function getStaticProps(context) {
     const meetupId = context.params.meetupId;
 
+    // fetch data for a single meetup
+    const client = await MongoClient.connect('mongodb+srv://<username>:<password>@cluster0.di5umik.mongodb.net/meetups?retryWrites=true&w=majority');
+
+    const db = client.db();
+
+    const meetupCollection = db.collection('meetups');
+
+    const selectedMeetup = await meetupCollection.findOne({
+        _id: new ObjectId(meetupId),
+    })
+
+    client.close();
+
     // runs during built time so that console log will show in terminal - not in browser
-    console.log(meetupId)
+    console.log(selectedMeetup)
 
     return {
         props: {
             meetupData: {
-                id: meetupId,
-                image: 'https://media.licdn.com/dms/image/D4D16AQHJpqThgdDs3Q/profile-displaybackgroundimage-shrink_350_1400/0/1671816287583?e=1677715200&v=beta&t=Dt0JA8EQUeRtpduCo-6B8Gm3j7LRcypMW28vYvNtC1g',
-                title: 'First Meetup',
-                address: 'Some Street 5, Some City',
-                description: 'The first meetup description',
+                id: selectedMeetup._id.toString(),
+                title: selectedMeetup.title,
+                image: selectedMeetup.image,
+                address: selectedMeetup.address,
+                description: selectedMeetup.description,
             },
         },
     };
